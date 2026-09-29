@@ -16,6 +16,7 @@ const MetaSystem=require("./systems/MetaSystem");
 const SettingsSystem=require("./systems/SettingsSystem");
 const FloorSystem=require("./systems/FloorSystem");
 const RoomVisualSystem=require("./systems/RoomVisualSystem");
+const {buildControlLayout}=require("./ui/ControlLayout");
 
 const canvas=wx.createCanvas();
 const ctx=canvas.getContext("2d");
@@ -31,6 +32,7 @@ const world={
 };
 
 const input=new Input(canvas);
+const controls=buildControlLayout(canvas);
 const inventory=new InventorySystem();
 const player=new Player(world.left+44,world.floorY-config.player.height);
 const drops=new DropSystem();
@@ -452,15 +454,15 @@ function renderHud(){
   text("Ⅱ",w-29,33,17,"#FFFFFF","center");
 
   ctx.globalAlpha=.22;
-  rect(14,h-64,54,44,"#FFFFFF");
-  rect(74,h-64,54,44,"#FFFFFF");
-  rect(w-132,h-64,52,44,config.colors.neonBlue);
-  rect(w-70,h-64,52,44,config.colors.neonPink);
+  rect(controls.left.x,controls.left.y,controls.left.w,controls.left.h,"#FFFFFF");
+  rect(controls.right.x,controls.right.y,controls.right.w,controls.right.h,"#FFFFFF");
+  rect(controls.jump.x,controls.jump.y,controls.jump.w,controls.jump.h,config.colors.neonBlue);
+  rect(controls.shoot.x,controls.shoot.y,controls.shoot.w,controls.shoot.h,config.colors.neonPink);
   ctx.globalAlpha=1;
-  text("←",41,h-35,20,"#FFFFFF","center");
-  text("→",101,h-35,20,"#FFFFFF","center");
-  text("跳",w-106,h-36,15,"#FFFFFF","center");
-  text("射",w-44,h-36,15,"#FFFFFF","center");
+  text("←",controls.left.x+controls.left.w/2,controls.left.y+controls.left.h/2+7,20,"#FFFFFF","center");
+  text("→",controls.right.x+controls.right.w/2,controls.right.y+controls.right.h/2+7,20,"#FFFFFF","center");
+  text("跳",controls.jump.x+controls.jump.w/2,controls.jump.y+controls.jump.h/2+6,15,"#FFFFFF","center");
+  text("射",controls.shoot.x+controls.shoot.w/2,controls.shoot.y+controls.shoot.h/2+6,15,"#FFFFFF","center");
 }
 
 function renderRewardOverlay(){
