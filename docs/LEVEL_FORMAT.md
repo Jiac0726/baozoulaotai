@@ -1,24 +1,49 @@
-# 关卡配置格式
+# 房间与关卡配置格式 v2
 
-关卡尽量数据驱动，避免把刷怪节奏写死在代码中。
+关卡从“定时刷波”改为“房间图”。
 
 示例：
 
-\`\`\`json
+```json
 {
-  "id": "park_001",
-  "name": "幸福公园",
-  "duration": 180,
-  "arena": "park_round_01",
-  "scenery": "park_sunset",
-  "waves": [
-    { "time": 0, "enemy": "purple_basic", "count": 8 },
-    { "time": 20, "enemy": "cone_runner", "count": 6 },
-    { "time": 45, "enemy": "demolition_tank", "count": 2 }
-  ],
-  "boss": { "time": 150, "enemy": "chef_boss_01" },
-  "dropTable": "park_normal"
+  "floorId": "neon_kitchen_01",
+  "theme": "neon_kitchen",
+  "startRoom": "r01",
+  "rooms": {
+    "r01": {
+      "type": "combat",
+      "layout": "room_small_a",
+      "enemies": [
+        { "id": "glitch_rat", "count": 3 },
+        { "id": "kitchen_bot", "count": 2 }
+      ],
+      "exits": ["r02"]
+    },
+    "r02": {
+      "type": "reward",
+      "layout": "reward_a",
+      "rewardPool": "common_items",
+      "exits": ["r03"]
+    },
+    "r03": {
+      "type": "boss",
+      "layout": "boss_wide_a",
+      "boss": "pressure_cooker_king",
+      "exits": []
+    }
+  }
 }
-\`\`\`
+```
 
-后续关卡只更换 arena、scenery、wave、boss 和 dropTable，即可复用同一套战斗系统。
+## 房间完成条件
+
+- combat：敌人清零
+- elite：精英死亡
+- reward：拾取或放弃奖励
+- shop：离开商店
+- event：完成事件
+- boss：Boss 死亡
+
+## 房间只负责数据
+
+运行逻辑由 RoomSystem / CombatSystem / DropSystem 驱动，避免把敌人和掉落写死在主循环里。
