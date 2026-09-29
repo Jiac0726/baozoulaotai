@@ -2,12 +2,26 @@
   "description": "暴走老太 - 横版像素 Roguelike 微信小游戏",
   "compileType": "game",
   "libVersion": "latest",
-  "appid": "touristappid",
+  "appid": "wxe21e509b190c0040",
   "projectname": "baozoulaotai",
   "setting": {
     "es6": true,
     "minified": false,
     "postcss": false,
     "urlCheck": false
+  },
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "assets/reference" },
+      { "type": "folder", "value": "assets/baozoulaotai_generated_assets" },
+      { "type": "folder", "value": "generated-assets" },
+      { "type": "folder", "value": "暴走老太" },
+      { "type": "folder", "value": "docs" },
+      { "type": "suffix", "value": ".zip" },
+      { "type": "suffix", "value": ".psd" },
+      { "type": "file", "value": "import-generated-assets.ps1" },
+      { "type": "file", "value": "project.config.json.local.bak" }
+    ],
+    "include": []
   }
 }
