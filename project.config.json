@@ -1,0 +1,13 @@
+{
+  "description": "暴走老太 - 横版像素 Roguelike 微信小游戏",
+  "compileType": "game",
+  "libVersion": "latest",
+  "appid": "touristappid",
+  "projectname": "baozoulaotai",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "postcss": false,
+    "urlCheck": false
+  }
+}
