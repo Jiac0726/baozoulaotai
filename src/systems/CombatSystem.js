@@ -12,6 +12,7 @@ class CombatSystem {
     this.kills=0;
     this.dropSystem=dropSystem;
     this.lastCrit=false;
+    this.killEvents=[];
   }
 
   fire(player,inventory,dirOverride=null){
@@ -91,11 +92,18 @@ class CombatSystem {
       const e=enemies[i];
       if(e.dead){
         this.kills++;
-        this.dropSystem.spawnCoin(e.x,e.y, e.type==="boss"?25:e.type==="tank"?3:1);
-        if(Math.random()<inventory.mod("killHealChance",0)) this.dropSystem.spawnHeal(e.x+8,e.y);
+        this.killEvents.push(e.type);
+        this.dropSystem.spawnCoin(e.x,e.y,e.type==="boss"?25:e.type==="tank"?3:1);
+        if(Math.random()<inventory.mod("killHealChance",0))this.dropSystem.spawnHeal(e.x+8,e.y);
         enemies.splice(i,1);
       }
     }
+  }
+
+  consumeKillEvents(){
+    const out=this.killEvents.slice();
+    this.killEvents.length=0;
+    return out;
   }
 }
 module.exports=CombatSystem;
