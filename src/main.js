@@ -17,6 +17,7 @@ const SettingsSystem=require("./systems/SettingsSystem");
 const FloorSystem=require("./systems/FloorSystem");
 const RoomVisualSystem=require("./systems/RoomVisualSystem");
 const {buildControlLayout}=require("./ui/ControlLayout");
+const scenes=require("./render/sceneKit");
 
 const canvas=wx.createCanvas();
 const ctx=canvas.getContext("2d");
@@ -294,77 +295,13 @@ function renderBackdrop(){
   }
 }
 
-function renderRoomProp(prop){
-  const roomW=world.right-world.left;
-  const roomH=world.floorY-76;
-  const x=world.left+prop.x*roomW;
-  const y=76+prop.y*roomH-prop.h;
-
-  if(prop.type==="crate"){
-    rect(x,y,prop.w,prop.h,"#5A3D2B");
-    strokeRect(x,y,prop.w,prop.h,"#B98955",2);
-    strokeRect(x+7,y+7,prop.w-14,prop.h-14,"#7E5737",2);
-  }else if(prop.type==="machine"){
-    rect(x,y,prop.w,prop.h,"#25283B");
-    strokeRect(x,y,prop.w,prop.h,config.colors.neonBlue,2);
-    rect(x+10,y+10,prop.w-20,16,"#111827");
-    rect(x+14,y+14,8,8,config.colors.neonPink);
-    rect(x+28,y+14,8,8,config.colors.neonYellow);
-  }else if(prop.type==="tank"){
-    rect(x,y,prop.w,prop.h,"#323247");
-    strokeRect(x,y,prop.w,prop.h,"#7563A8",3);
-    rect(x+prop.w*.42,y-12,prop.w*.16,12,"#51496A");
-    rect(x+10,y+18,prop.w-20,8,config.colors.neonPurple);
-  }else if(prop.type==="pipe"){
-    rect(x,y,prop.w,prop.h,"#3C4054");
-    rect(x,y+4,prop.w,4,"#6B708C");
-    rect(x+18,y-10,12,prop.h+20,"#313548");
-  }else if(prop.type==="counter"){
-    rect(x,y,prop.w,prop.h,"#3A2D3F");
-    strokeRect(x,y,prop.w,prop.h,"#7D5C86",2);
-    rect(x,y,prop.w,7,config.colors.neonPink);
-  }else if(prop.type==="shelf"){
-    rect(x,y,prop.w,prop.h,"#2C2A3B");
-    strokeRect(x,y,prop.w,prop.h,"#615875",2);
-    for(let sy=18;sy<prop.h;sy+=26)rect(x+5,y+sy,prop.w-10,4,"#514A63");
-  }else if(prop.type==="vent"){
-    rect(x,y,prop.w,prop.h,"#252838");
-    strokeRect(x,y,prop.w,prop.h,"#656B82",2);
-    for(let vx=8;vx<prop.w-5;vx+=9)rect(x+vx,y+6,3,prop.h-12,"#11131D");
-  }
-}
-
 function renderRoomScene(){
-  const layout=roomVisuals.getLayout(rooms.current());
-  const roomW=world.right-world.left;
-  const roomH=world.floorY-76;
-
-  // 背景墙分块
-  for(let gx=0;gx<8;gx++){
-    for(let gy=0;gy<4;gy++){
-      const px=world.left+gx*(roomW/8);
-      const py=76+gy*(roomH/4);
-      strokeRect(px,py,roomW/8,roomH/4,"#211C35",1);
-    }
-  }
-
-  // 墙面灯带
-  rect(world.left+18,104,roomW-36,3,"#302553");
-  rect(world.left+18,108,roomW*.28,2,config.colors.neonBlue);
-  rect(world.right-roomW*.25-18,108,roomW*.25,2,config.colors.neonPink);
-
-  (layout.signs||[]).forEach(s=>{
-    text(s.text,world.left+s.x*roomW,76+s.y*roomH,13,s.color||config.colors.neonBlue,"center");
-  });
-
-  (layout.props||[]).forEach(renderRoomProp);
-
-  // 可碰撞高台
-  (world.platforms||[]).forEach((p,i)=>{
-    rect(p.x,p.y,p.w,p.h,"#343048");
-    rect(p.x,p.y,p.w,4,i%2?config.colors.neonBlue:config.colors.neonPink);
-    for(let sx=p.x+8;sx<p.x+p.w-5;sx+=18)rect(sx,p.y+p.h,3,8,"#272337");
-  });
+  const room=rooms.current();
+  const layout=roomVisuals.getLayout(room);
+  const args={ctx,w,h,world,room,layout,platforms:world.platforms||[],time:Date.now()/1000};
+  if(room.type==="shop"){scenes.shopScene(args);return;}
+  if(enemies.length>0){scenes.battleScene(args);return;}
+  scenes.emptyScene(args);
 }
 
 function renderBackground(){
@@ -482,7 +419,7 @@ function renderRewardOverlay(){
 
 function renderShopOverlay(){
   if(rooms.current().type!=="shop"||rooms.resolved)return;
-  rect(0,0,w,h,"rgba(0,0,0,.70)");
+  rect(0,0,w,h,"rgba(0,0,0,.38)");
   text("深夜小卖部 · 金币 "+inventory.coins,w/2,h/2-88,22,config.colors.neonBlue,"center");
   const cardW=Math.min(145,(w-90)/3),gap=12,total=cardW*3+gap*2,start=(w-total)/2;
   shop.stock.forEach((id,i)=>{
@@ -508,8 +445,7 @@ function renderEventOverlay(){
 }
 
 function renderMenu(){
-  renderBackdrop();
-  rect(0,0,w,h,"rgba(3,2,12,.45)");
+  scenes.menuScene({ctx,w,h,world,time:Date.now()/1000});
   text("暴走老太",w/2,h/2-105,38,config.colors.neonPink,"center");
   text("NEON ROGUELIKE PROTOTYPE",w/2,h/2-76,12,config.colors.neonBlue,"center");
   text("历史最佳 "+(save.bestFloor||0)+" 层 · 通关 "+(save.wins||0)+" 次",w/2,h/2-43,12,"#C9C4DD","center");
