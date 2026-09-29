@@ -1,6 +1,26 @@
-const config=require("../config/gameConfig");
-class Enemy{
-  constructor(x,y,scale=1){this.x=x;this.y=y;this.r=config.enemy.radius*scale;this.speed=config.enemy.speed*(1+.12*(scale-1));this.hp=config.enemy.hp*scale;}
-  update(dt,player){const dx=player.x-this.x,dy=player.y-this.y,len=Math.hypot(dx,dy)||1;this.x+=dx/len*this.speed*dt;this.y+=dy/len*this.speed*dt;}
+const config = require("../config/gameConfig");
+
+class Enemy {
+  constructor(x, floorY, type = "basic") {
+    this.type = type;
+    this.w = config.enemy.width;
+    this.h = config.enemy.height;
+    this.x = x;
+    this.y = floorY - this.h;
+    this.hp = type === "tank" ? 7 : config.enemy.hp;
+    this.speed = type === "runner" ? 125 : type === "tank" ? 48 : config.enemy.speed;
+    this.dead = false;
+  }
+
+  update(dt, player) {
+    const dx = player.x - this.x;
+    const dir = Math.sign(dx);
+    if (Math.abs(dx) > 22) this.x += dir * this.speed * dt;
+  }
+
+  damage(v) {
+    this.hp -= v;
+    if (this.hp <= 0) this.dead = true;
+  }
 }
-module.exports=Enemy;
+module.exports = Enemy;
