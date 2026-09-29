@@ -1,36 +1,76 @@
-# 美术素材规范
+# 美术素材规范 v2
 
-## 总原则
+## 总方向
 
-最终游戏素材必须从概念大图拆成独立透明 PNG 或 Sprite Sheet，不直接把整张 AI 概念图作为游戏场景。
+低分辨率像素美术，高对比霓虹灯光，避免高清 3D 卡通渲染直接进入游戏。
 
-## 目录
+核心关键词：
 
-- assets/player：主角动作
-- assets/enemies：普通敌人
-- assets/boss：Boss
-- assets/skills：技能图标与技能主体
-- assets/effects：命中、爆炸、预警、拖尾
-- assets/drops：金币、EXP、技能球、宝箱等
-- assets/arena：中央战斗底板
-- assets/scenery：四周布景
-- assets/ui：HUD、按钮、面板
+- 硬像素边缘
+- 少渐变
+- 强轮廓
+- 深色环境
+- 紫 / 蓝 / 粉 / 红霓虹高光
+- 发光掉落物
+- 夸张命中闪光
 
-## 主角动作
+## 推荐基准
 
-idle / run_8dir / attack / skill / dash / hurt / knockdown / death / pickup。
+- 角色基础高度：48~64 px
+- 小怪：32~56 px
+- Boss：96~160 px
+- 图标：32 / 48 / 64 px
+- 场景瓦片：16 或 32 px 网格
+- 最近邻缩放，不使用平滑插值
 
-建议所有同类动作保持统一画布、锚点和角色脚底中心点。
+## 主角 Sprite
+
+至少：
+
+- idle
+- run
+- jump
+- fall
+- land
+- shoot
+- melee
+- dash
+- hurt
+- death
+
+横版以左右两个方向为主，另一方向优先镜像处理。
 
 ## 场景分层
 
-1. arena_base：纯战斗地面。
-2. arena_marks：裂纹、污渍、冰冻、烧焦。
-3. scenery_back：远景与天空。
-4. scenery_side：树、摊位、路灯、花坛等四周布景。
-5. foreground：可遮挡角色的近景。
-6. obstacle：真正参与碰撞的障碍物。
+1. background：远景霓虹城市/地下设施
+2. midground：墙体、招牌、管线
+3. platforms：真正碰撞平台
+4. props：桌椅、厨具、机器
+5. foreground：近景遮挡
+6. fx：霓虹、烟雾、蒸汽、闪烁灯
 
-## 战斗反馈
+## UI
 
-技能至少拆为：起手 / 飞行体或主体 / 命中 / 持续 / 消散。敌方攻击必须有红圈、扇形、直线或落点预警。
+- 像素边框
+- 深色面板
+- 荧光描边
+- 小地图
+- 血量 / 护盾
+- 武器栏
+- 道具栏
+- 金币
+- 房间奖励弹窗
+
+## 运行时目录
+
+- assets/player
+- assets/enemies
+- assets/boss
+- assets/weapons
+- assets/items
+- assets/effects
+- assets/rooms
+- assets/tiles
+- assets/ui
+
+原始 AI 概念图继续保存在 `assets/reference`，仅用于拆分和风格参考。
