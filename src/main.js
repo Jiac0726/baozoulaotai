@@ -300,8 +300,8 @@ function renderRoomScene(){
   const layout=roomVisuals.getLayout(room);
   const args={ctx,w,h,world,room,layout,platforms:world.platforms||[],time:Date.now()/1000};
   if(room.type==="shop"){scenes.shopScene(args);return;}
-  if(enemies.length>0){scenes.battleScene(args);return;}
-  scenes.emptyScene(args);
+  if(room.type==="reward"||room.type==="event"){scenes.emptyScene(args);return;}
+  scenes.battleScene(args);
 }
 
 function renderBackground(){
