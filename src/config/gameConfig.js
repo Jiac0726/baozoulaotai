@@ -1,11 +1,42 @@
 module.exports = {
-  arena: { marginX: 28, top: 150, bottom: 150 },
-  player: { radius: 18, speed: 230, maxHp: 100 },
-  enemy: { radius: 14, speed: 72, hp: 24, contactDamage: 10 },
-  wave: { duration: 25, spawnEvery: 0.8 },
-  skillOrb: { radius: 11, spawnEvery: 7 },
+  world: {
+    gravity: 1550,
+    floorHeight: 74,
+    roomPadding: 34
+  },
+  player: {
+    width: 34,
+    height: 46,
+    speed: 235,
+    jumpSpeed: 585,
+    maxHp: 6,
+    shootCooldown: 0.22
+  },
+  enemy: {
+    width: 32,
+    height: 34,
+    speed: 82,
+    hp: 3,
+    contactDamage: 1
+  },
+  bullet: {
+    width: 14,
+    height: 6,
+    speed: 570,
+    damage: 1,
+    life: 1.6
+  },
   colors: {
-    background: "#182033", arena: "#C99C6B", border: "#765231",
-    player: "#F3E4D4", enemy: "#6B3FA0", orb: "#38BDF8", text: "#FFFFFF"
+    background: "#090814",
+    room: "#151326",
+    platform: "#25203C",
+    neonPink: "#FF4FD8",
+    neonBlue: "#35D7FF",
+    neonPurple: "#8F5BFF",
+    neonYellow: "#FFE76A",
+    player: "#F8F2E7",
+    enemy: "#9B4DFF",
+    text: "#FFFFFF",
+    muted: "#8E8AA8"
   }
 };
