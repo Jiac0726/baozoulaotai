@@ -8,15 +8,15 @@ class RoomSystem{
     this.cleared=false;
     this.resolved=false;
     this.rooms=[
-      {type:"combat",name:"后厨入口",enemies:["basic","basic","runner"]},
-      {type:"reward",name:"储藏间"},
-      {type:"combat",name:"霓虹走廊",enemies:["basic","runner","runner","tank"]},
-      {type:"shop",name:"深夜小卖部"},
-      {type:"event",name:"故障厨房"},
-      {type:"elite",name:"冷库",enemies:["tank","tank","runner"]},
-      {type:"reward",name:"VIP休息室"},
-      {type:"combat",name:"主厨房",enemies:["basic","runner","tank","runner","basic"]},
-      {type:"boss",name:"高压锅王"}
+      {type:"combat",name:"后厨入口",layout:"room_small_a",enemies:["basic","basic","runner"]},
+      {type:"reward",name:"储藏间",layout:"room_mid_a"},
+      {type:"combat",name:"霓虹走廊",layout:"room_mid_a",enemies:["basic","runner","runner","tank"]},
+      {type:"shop",name:"深夜小卖部",layout:"room_shop"},
+      {type:"event",name:"故障厨房",layout:"room_event"},
+      {type:"elite",name:"冷库",layout:"room_mid_a",enemies:["tank","tank","runner"]},
+      {type:"reward",name:"VIP休息室",layout:"room_small_a"},
+      {type:"combat",name:"主厨房",layout:"room_mid_a",enemies:["basic","runner","tank","runner","basic"]},
+      {type:"boss",name:"高压锅王",layout:"room_boss"}
     ];
   }
 
@@ -51,15 +51,14 @@ class RoomSystem{
 
   update(enemies){
     const type=this.current().type;
-    if(["combat","elite","boss"].includes(type) && !this.cleared && enemies.length===0){
+    if(["combat","elite","boss"].includes(type)&&!this.cleared&&enemies.length===0){
       this.cleared=true;
       this.resolved=true;
     }
   }
 
   canExit(player){
-    return this.cleared && this.resolved &&
-      player.x+player.w>this.world.right-24;
+    return this.cleared&&this.resolved&&player.x+player.w>this.world.right-24;
   }
 
   next(enemies,player,inventory){
