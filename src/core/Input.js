@@ -1,6 +1,9 @@
+const {buildControlLayout,contains}=require("../ui/ControlLayout");
+
 class Input {
   constructor(canvas) {
     this.canvas = canvas;
+    this.layout = buildControlLayout(canvas);
     this.left = false;
     this.right = false;
     this.jump = false;
@@ -23,10 +26,7 @@ class Input {
   }
 
   handle(touches) {
-    const w = this.canvas.width;
-    const h = this.canvas.height;
     const prevJump = this.jump;
-
     this.left = false;
     this.right = false;
     this.jump = false;
@@ -36,14 +36,10 @@ class Input {
       const x = t.clientX;
       const y = t.clientY;
 
-      if (x < w * 0.36 && y > h * 0.42) {
-        if (x < w * 0.18) this.left = true;
-        else this.right = true;
-      } else if (x > w * 0.78 && y > h * 0.46) {
-        this.shoot = true;
-      } else if (x > w * 0.58 && y > h * 0.46) {
-        this.jump = true;
-      }
+      if (contains(this.layout.left,x,y)) this.left = true;
+      if (contains(this.layout.right,x,y)) this.right = true;
+      if (contains(this.layout.jump,x,y)) this.jump = true;
+      if (contains(this.layout.shoot,x,y)) this.shoot = true;
     }
 
     this.jumpPressed = this.jump && !prevJump;
