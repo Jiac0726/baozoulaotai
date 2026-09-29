@@ -1,63 +1,76 @@
-const Enemy = require("../entities/Enemy");
+const Enemy=require("../entities/Enemy");
+const Boss=require("../entities/Boss");
 
-class RoomSystem {
-  constructor(world) {
-    this.world = world;
-    this.index = 0;
-    this.cleared = false;
-    this.reward = null;
-    this.rooms = [
-      { type: "combat", enemies: ["basic", "basic", "runner"] },
-      { type: "combat", enemies: ["basic", "runner", "runner", "tank"] },
-      { type: "reward", enemies: [] },
-      { type: "combat", enemies: ["tank", "basic", "runner", "basic"] },
-      { type: "boss", enemies: ["tank", "tank", "runner", "runner"] }
+class RoomSystem{
+  constructor(world){
+    this.world=world;
+    this.index=0;
+    this.cleared=false;
+    this.resolved=false;
+    this.rooms=[
+      {type:"combat",name:"后厨入口",enemies:["basic","basic","runner"]},
+      {type:"reward",name:"储藏间"},
+      {type:"combat",name:"霓虹走廊",enemies:["basic","runner","runner","tank"]},
+      {type:"shop",name:"深夜小卖部"},
+      {type:"event",name:"故障厨房"},
+      {type:"elite",name:"冷库",enemies:["tank","tank","runner"]},
+      {type:"reward",name:"VIP休息室"},
+      {type:"combat",name:"主厨房",enemies:["basic","runner","tank","runner","basic"]},
+      {type:"boss",name:"高压锅王"}
     ];
   }
 
-  enter(enemies, player) {
-    enemies.length = 0;
-    this.cleared = false;
-    this.reward = null;
-    const room = this.rooms[this.index];
-    player.x = this.world.left + 44;
-    player.y = this.world.floorY - player.h;
+  enter(enemies,player,inventory){
+    enemies.length=0;
+    this.cleared=false;
+    this.resolved=false;
+    player.x=this.world.left+44;
+    player.y=this.world.floorY-player.h;
+    inventory.onEnterRoom();
 
-    if (room.type === "reward") {
-      this.cleared = true;
-      this.reward = { name: "发光拖鞋", desc: "移动速度 +10%（占位）" };
+    const room=this.current();
+    if(room.type==="reward"||room.type==="shop"||room.type==="event") return;
+
+    if(room.type==="boss"){
+      enemies.push(new Boss(this.world.right-160,this.world.floorY));
       return;
     }
 
-    const span = this.world.right - this.world.left - 180;
-    room.enemies.forEach((type, i) => {
-      enemies.push(new Enemy(this.world.left + 150 + (span * (i + 1)) / (room.enemies.length + 1), this.world.floorY, type));
+    const list=room.enemies||[];
+    const span=this.world.right-this.world.left-190;
+    list.forEach((type,i)=>{
+      enemies.push(new Enemy(
+        this.world.left+145+(span*(i+1))/(list.length+1),
+        this.world.floorY,
+        type
+      ));
     });
   }
 
-  update(enemies) {
-    if (!this.cleared && enemies.length === 0) {
-      this.cleared = true;
-      if (!this.reward) this.reward = { name: "老花镜", desc: "暴击率 +8%（占位）" };
+  resolveRoom(){this.resolved=true;this.cleared=true;}
+
+  update(enemies){
+    const type=this.current().type;
+    if(["combat","elite","boss"].includes(type) && !this.cleared && enemies.length===0){
+      this.cleared=true;
+      this.resolved=true;
     }
   }
 
-  canExit(player) {
-    return this.cleared && player.x + player.w > this.world.right - 24;
+  canExit(player){
+    return this.cleared && this.resolved &&
+      player.x+player.w>this.world.right-24;
   }
 
-  next(enemies, player) {
-    if (this.index < this.rooms.length - 1) {
+  next(enemies,player,inventory){
+    if(this.index<this.rooms.length-1){
       this.index++;
-      this.enter(enemies, player);
+      this.enter(enemies,player,inventory);
       return false;
     }
     return true;
   }
 
-  current() {
-    return this.rooms[this.index];
-  }
+  current(){return this.rooms[this.index];}
 }
-
-module.exports = RoomSystem;
+module.exports=RoomSystem;
