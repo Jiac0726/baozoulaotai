@@ -33,9 +33,26 @@ class Player {
       this.justJumped = true;
     }
 
+    const prevBottom = this.y + this.h;
+
     this.vy += config.world.gravity * dt;
     this.x += this.vx * dt;
     this.y += this.vy * dt;
+
+    this.onGround = false;
+
+    if (this.vy >= 0 && world.platforms) {
+      for (const p of world.platforms) {
+        const nowBottom = this.y + this.h;
+        const horizontal = this.x + this.w > p.x && this.x < p.x + p.w;
+        if (horizontal && prevBottom <= p.y && nowBottom >= p.y) {
+          this.y = p.y - this.h;
+          this.vy = 0;
+          this.onGround = true;
+          break;
+        }
+      }
+    }
 
     if (this.y + this.h >= world.floorY) {
       this.y = world.floorY - this.h;
